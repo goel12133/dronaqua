@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dronaqua — Solar swarm drones for PFAS detection and treatment</title>
+<meta name="description" content="Dronaqua builds solar-powered swarm drones that detect, map and remove PFOS from urban waterways. A student-founded company from Singapore.">
+<link rel="icon" type="image/png" href="img/logo.png">
+<link rel="apple-touch-icon" href="img/logo.png">
+<meta property="og:title" content="Dronaqua">
+<meta property="og:description" content="Solar swarm drones that find, map and remove forever chemicals from Singapore's waterways.">
+<meta property="og:image" content="img/drone-render.jpg">
+<style>html{color-scheme:light dark}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a tide-line page — full-bleed deep-water bands alternate with light "surface" sections; the logo blue carries every call-out. */
+:root{
+  --bg:#f6f8f9;        /* surface water, cool white */
+  --bg-2:#e8eef1;      /* shallow */
+  --deep:#0b2230;      /* deep catchment */
+  --deep-2:#10303f;
+  --fg:#10242e;
+  --muted:#5a6d78;
+  --line:#cfd9de;
+  --accent:#1d6bf1;    /* logo blue */
+  --accent-ink:#1557c4;
+  --teal:#1e9aa6;
+  --on-deep:#e9f1f4;
+  --on-deep-muted:#9fb6c0;
+  --display:"Sora",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d1a21;--bg-2:#132631;--deep:#06151d;--deep-2:#0b1f2a;--fg:#e6eef2;--muted:#95aab4;--line:#24404c;--accent:#3d84ff;--accent-ink:#7aa9ff;--teal:#3fbfca;--on-deep:#e9f1f4;--on-deep-muted:#95aab4;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d1a21;--bg-2:#132631;--deep:#06151d;--deep-2:#0b1f2a;--fg:#e6eef2;--muted:#95aab4;--line:#24404c;--accent:#3d84ff;--accent-ink:#7aa9ff;--teal:#3fbfca;--on-deep:#e9f1f4;--on-deep-muted:#95aab4;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--deep)}
+img{max-width:100%;display:block;height:auto}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+h2{font-size:clamp(1.8rem,3.4vw,2.6rem);font-weight:600;letter-spacing:-.01em}
+h3{font-size:1.15rem;font-weight:600}
+p{margin:0}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);margin-bottom:.9rem}
+.deep .eyebrow{color:var(--accent)}
+section{padding-block:clamp(3.5rem,8vw,6.5rem)}
+.deep{background:var(--deep);color:var(--on-deep)}
+.deep .muted{color:var(--on-deep-muted)}
+.muted{color:var(--muted)}
+.lead{font-size:1.2rem;max-width:62ch}
+.grid{display:grid;gap:1.5rem}
+.two{grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
+.three{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
+.grid>*{min-width:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* nav */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--deep);color:var(--on-deep);border-bottom:1px solid rgba(255,255,255,.08)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:.8rem}
+.brand{font-family:var(--display);font-weight:700;font-size:1.25rem;letter-spacing:-.01em;text-decoration:none;display:flex;align-items:center;gap:.5rem}
+.brand img{width:28px;height:28px;border-radius:6px}
+nav ul{list-style:none;margin:0;padding:0;display:flex;gap:1.4rem;flex-wrap:wrap}
+nav li a{text-decoration:none;font-size:.9rem;color:var(--on-deep-muted)}
+nav li a:hover{color:var(--on-deep)}
+@media (max-width:720px){nav ul{display:none}}
+
+/* hero */
+.hero{background:linear-gradient(180deg,var(--deep) 0%,var(--deep-2) 70%,var(--bg) 70%,var(--bg) 100%);color:var(--on-deep);padding-block:clamp(3rem,7vw,5.5rem) 0}
+.hero h1{font-size:clamp(2.4rem,6vw,4.4rem);font-weight:700;letter-spacing:-.02em;max-width:16ch}
+.hero .lead{color:var(--on-deep-muted);margin-top:1.4rem}
+.hero-top{display:grid;gap:2rem;grid-template-columns:1.2fr .8fr;align-items:end}
+@media (max-width:800px){.hero-top{grid-template-columns:1fr}}
+.facts{font-family:var(--mono);font-size:.82rem;display:grid;gap:.5rem;border-left:2px solid var(--accent);padding-left:1rem;color:var(--on-deep-muted)}
+.facts b{color:var(--on-deep);font-weight:500}
+.hero-img{margin-top:3rem;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 30px 60px -30px rgba(0,0,0,.6)}
+.hero-img img{width:100%;object-fit:cover;max-height:420px}
+.cta{display:inline-flex;align-items:center;gap:.5rem;background:var(--accent);color:#fff;text-decoration:none;font-family:var(--display);font-weight:600;padding:.75rem 1.25rem;border-radius:999px;margin-top:1.8rem;font-size:.95rem}
+.cta:hover{filter:brightness(1.08)}
+
+/* stat strip */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.stat{background:var(--bg);padding:1.25rem 1.3rem}
+.stat .n{font-family:var(--display);font-size:2rem;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--accent-ink)}
+.stat .l{font-size:.88rem;color:var(--muted);margin-top:.2rem}
+
+/* pipeline */
+.pipe{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:1.5rem;margin-top:2.5rem;counter-reset:step}
+.step{position:relative;padding-top:1.2rem;border-top:2px solid var(--line)}
+.step::before{counter-increment:step;content:"Pass " counter(step);font-family:var(--mono);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-ink);display:block;margin-bottom:.6rem}
+.step h3{margin-bottom:.5rem}
+.step p{color:var(--muted);font-size:.97rem}
+.step code{font-family:var(--mono);font-size:.85rem;background:var(--bg-2);padding:.1rem .4rem;border-radius:4px}
+
+/* drone */
+.drone-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:center}
+@media (max-width:800px){.drone-grid{grid-template-columns:1fr}}
+.spec{list-style:none;margin:1.5rem 0 0;padding:0;display:grid;gap:0}
+.spec > div{display:grid;grid-template-columns:160px 1fr;gap:1rem;padding:.7rem 0;border-top:1px solid rgba(255,255,255,.12);font-size:.95rem}
+.spec > div:last-child{border-bottom:1px solid rgba(255,255,255,.12)}
+.spec dt{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0}
+.spec dd{margin:0;color:var(--on-deep)}
+@media (max-width:480px){.spec > div{grid-template-columns:1fr;gap:.2rem}}
+.render{background:#fff;border-radius:14px;padding:1rem;box-shadow:0 20px 50px -25px rgba(0,0,0,.7)}
+.render img{margin:auto;max-height:380px;object-fit:contain}
+.cap{font-size:.85rem;color:var(--muted);margin-top:.6rem;line-height:1.45}
+.deep .cap{color:var(--on-deep-muted)}
+
+/* sim */
+.sim{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:center}
+@media (max-width:800px){.sim{grid-template-columns:1fr}}
+.sim figure{margin:0;background:#fff;border-radius:12px;padding:.8rem;border:1px solid var(--line)}
+
+/* compare table */
+.tbl{overflow-x:auto;margin-top:2rem;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.93rem}
+th,td{text-align:left;padding:.85rem 1rem;vertical-align:top;border-top:1px solid var(--line)}
+thead th{border-top:0;font-family:var(--mono);font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--bg-2)}
+th[scope=row]{font-family:var(--display);font-weight:600;font-size:.9rem;width:18%}
+td.us{background:color-mix(in srgb,var(--accent) 7%,var(--bg));border-left:3px solid var(--accent)}
+.caveat{font-size:.9rem;color:var(--muted);margin-top:1rem;max-width:70ch}
+
+/* timeline */
+.tl{list-style:none;margin:2.5rem 0 0;padding:0;display:grid;gap:0;border-left:2px solid var(--line);margin-left:.5rem}
+.tl li{position:relative;padding:0 0 1.8rem 1.6rem}
+.tl li::before{content:"";position:absolute;left:-7px;top:.45em;width:12px;height:12px;border-radius:50%;background:var(--bg);border:3px solid var(--accent)}
+.tl .when{font-family:var(--mono);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tl h3{margin:.25rem 0 .3rem}
+.tl p{color:var(--muted);font-size:.97rem;max-width:62ch}
+
+/* team */
+.team{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:1.5rem;margin-top:2.5rem}
+.member{border-top:2px solid var(--accent);padding-top:1rem}
+.member .role{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:.3rem 0 .8rem}
+.member blockquote{margin:0;font-size:.95rem;color:var(--muted);font-style:italic;line-height:1.55}
+.member .does{font-size:.93rem;margin-top:.8rem}
+
+/* partners */
+.logos{display:flex;flex-wrap:wrap;gap:.6rem 2rem;margin-top:1.6rem;font-family:var(--display);font-weight:600;font-size:1.05rem;color:var(--on-deep)}
+.logos span{padding:.4rem 0;border-bottom:2px solid rgba(255,255,255,.14)}
+
+/* gallery */
+.gal{display:grid;grid-template-columns:repeat(12,1fr);gap:1.2rem;margin-top:2.5rem}
+.gal figure{margin:0;grid-column:span 6}
+.gal figure.wide{grid-column:span 8}
+.gal figure.tall{grid-column:span 4}
+.gal img{border-radius:10px;width:100%;object-fit:cover;aspect-ratio:3/2}
+.gal figure.tall img{aspect-ratio:3/4}
+.gal figure.wide img{aspect-ratio:3/2}
+@media (max-width:800px){.gal figure,.gal figure.wide,.gal figure.tall{grid-column:span 12}.gal figure.tall img{aspect-ratio:4/5;object-position:top}}
+.gal figcaption{font-size:.88rem;color:var(--muted);margin-top:.6rem;line-height:1.5}
+.gal figcaption b{color:var(--fg);font-weight:500}
+
+/* next */
+.next{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:1.5rem;margin-top:2rem}
+.next div{padding:1.2rem;border:1px solid rgba(255,255,255,.14);border-radius:10px}
+.next h3{font-size:1rem;margin-bottom:.4rem}
+.next p{font-size:.93rem;color:var(--on-deep-muted)}
+
+/* quote band */
+.quote{font-family:var(--display);font-size:clamp(1.25rem,2.4vw,1.7rem);font-weight:500;line-height:1.4;max-width:30ch;text-wrap:balance}
+.quote-by{font-family:var(--mono);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--on-deep-muted);margin-top:1.2rem}
+
+footer{background:var(--deep);color:var(--on-deep-muted);padding-block:2.5rem;font-size:.88rem;border-top:1px solid rgba(255,255,255,.08)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:1rem 2rem;justify-content:space-between}
+footer code{font-family:var(--mono)}
+@media (prefers-reduced-motion:no-preference){.step,.member,.tl li{animation:rise .6s ease both}.step:nth-child(2),.member:nth-child(2){animation-delay:.08s}.step:nth-child(3),.member:nth-child(3){animation-delay:.16s}.member:nth-child(4){animation-delay:.24s}}
+@keyframes rise{from{transform:translateY(8px)}to{transform:none}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="img/logo.png" alt="" width="104" height="108">Dronaqua</a>
+    <ul>
+      <li><a href="#problem">The problem</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#drone">The drone</a></li>
+      <li><a href="#compare">Why it's better</a></li>
+      <li><a href="#story">Our story</a></li>
+      <li><a href="#team">Team</a></li>
+      <li><a href="#next">What's next</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-top">
+      <div>
+        <p class="eyebrow">Student-built · Singapore · Est. 2025</p>
+        <h1>Solar swarm drones that find, map and remove forever chemicals.</h1>
+        <p class="lead">Dronaqua is a fleet of small floating robots that detect PFOS in urban water bodies, adsorb it with biochar, and send a live contamination map back to shore. Built by four UWCSEA students, in collaboration with Singapore's National Water Agency.</p>
+        <a class="cta" href="#how">See how it works ↓</a>
+      </div>
+      <div class="facts">
+        <div><b>What</b> — PFOS detect · map · treat, in one pass</div>
+        <div><b>How</b> — screen-printed electrode sensing, biochar adsorption, ESP32 mesh, control-station maps</div>
+        <div><b>Why</b> — continuous, dense coverage at a fraction of lab-sampling cost</div>
+        <div><b>Recognition</b> — Conrad Challenge Finalist · Dunia, Jan 2026</div>
+      </div>
+    </div>
+    <div class="hero-img">
+      <img src="img/drone-render.jpg" alt="Rendered Dronaqua drone floating on water: a solar panel over an electronics bay, on an orange float ring" width="2472" height="920">
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <div class="stats">
+      <div class="stat"><div class="n">1.6 nM</div><div class="l">Lowest PFOS concentration the sensing approach targets</div></div>
+      <div class="stat"><div class="n">&lt;1.5%</div><div class="l">PFAS remaining in treated samples (activated carbon adsorption)</div></div>
+      <div class="stat"><div class="n">S$600–800</div><div class="l">Build cost per modular drone</div></div>
+      <div class="stat"><div class="n">0 L</div><div class="l">Fuel. Every drone runs on its own solar panel</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="problem" class="deep">
+  <div class="wrap">
+    <div class="grid two">
+      <div>
+        <p class="eyebrow">The problem</p>
+        <h2>PFAS don't break down. Our way of finding them hasn't changed in decades.</h2>
+      </div>
+      <div class="muted" style="display:grid;gap:1rem">
+        <p>Per- and polyfluoroalkyl substances (PFAS), the "forever chemicals", enter urban waterways through consumer goods, industrial runoff and waste. Once there they persist, bioaccumulate, and are linked to cancer and hormone disruption.</p>
+        <p>Today, finding them means a person taking a bottle of water to a centralised lab for solid-phase extraction and direct-injection analysis. It's accurate, but it's slow, expensive, labour-intensive, and gives a single point reading hours or days later. Contamination hotspots go unmapped, and treatment at scale means high heat or strong chemicals that create their own byproducts.</p>
+        <p>We focus on PFOS, the most prevalent PFAS in urban water samples, and on closing the gap between <em>detecting</em> it and <em>doing something about it</em>, at the water's surface, in real time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <p class="eyebrow">How it works</p>
+    <h2>Detect, treat, map. One drone, one pass.</h2>
+    <p class="lead muted" style="margin-top:1rem">Each drone carries the full pipeline on board. A swarm of them covers a water body the way a single lab sample never could.</p>
+    <div class="pipe">
+      <div class="step">
+        <h3>Detect</h3>
+        <p>A PFOS-selective molecularly imprinted polymer sensor, mobilised on screen-printed electrodes and read by a mini-potentiostat, measures PFOS at environmentally relevant levels straight from the water. Sensor sourcing and customisation are being done with <code>Metrohm</code>.</p>
+      </div>
+      <div class="step">
+        <h3>Treat</h3>
+        <p>An onboard biochar cartridge adsorbs PFOS from the sampled water. Biochar was chosen over high-heat or chemical remediation because it is cheap, effective and produces no harmful byproducts.</p>
+      </div>
+      <div class="step">
+        <h3>Map</h3>
+        <p>Every reading is GPS-tagged and timestamped, then relayed drone-to-drone over an <code>ESP32</code> mesh network to a Raspberry Pi control station, which renders a live concentration heatmap for operators.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="drone" class="deep">
+  <div class="wrap">
+    <div class="drone-grid">
+      <div class="render">
+        <img src="img/drone-cad.jpg" alt="CAD model of the Dronaqua drone: solar panel on top, translucent electronics housing, black chassis with legs, and an orange float ring with two side wheels" width="840" height="490">
+        <p class="cap">CAD model of the drone. Solar panel, electronics bay, biochar module below the chassis, float ring for stability.</p>
+      </div>
+      <div>
+        <p class="eyebrow">The drone</p>
+        <h2>Small, modular, and built from parts you can order.</h2>
+        <p class="muted" style="margin-top:1rem">Designed in CAD and assembled by hand. Keeping each unit cheap is the point: a fleet of twenty costs less than one afternoon of conventional lab work at scale, and adding coverage means adding drones, not infrastructure.</p>
+        <dl class="spec">
+          <div><dt>Power</dt><dd>Solar panel with charge controller and voltage regulator; battery-backed for cloud cover</dd></div>
+          <div><dt>Sensing</dt><dd>MIP / screen-printed electrode, mini-potentiostat readout</dd></div>
+          <div><dt>Treatment</dt><dd>Replaceable biochar adsorption cartridge</dd></div>
+          <div><dt>Compute &amp; comms</dt><dd>ESP32 for motor control and mesh radio; GPS module; Raspberry Pi Zero 2 W control station</dd></div>
+          <div><dt>Build cost</dt><dd>S$600–800 per unit at prototype volumes (solar ~S$80, motors ~S$100, electronics ~S$70, materials S$100–150, plus sensor)</dd></div>
+          <div><dt>Materials</dt><dd>Biodegradable float, propeller and frame where possible</dd></div>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sim">
+      <div>
+        <p class="eyebrow">Simulation &amp; control station</p>
+        <h2>From sensor readings to a map operators can act on.</h2>
+        <p class="muted" style="margin-top:1rem">Before the first drone hit the water, we built a simulation of swarm coordination, mesh communication and data return, and the control-station software that turns readings into a concentration map. The output below is simulated data for a 20 m × 20 m sampling area: the hotspots are where a crew would be sent first.</p>
+        <p class="muted" style="margin-top:1rem">The same pipeline becomes <strong>DronaData</strong>: a growing, timestamped record of PFOS levels across catchments that doesn't exist anywhere today.</p>
+      </div>
+      <figure>
+        <img src="img/heatmap.jpg" alt="Simulated PFAS concentration heatmap over a 20 by 20 metre area, with several red hotspots on a pale grid" width="880" height="680">
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="compare" class="deep">
+  <div class="wrap">
+    <p class="eyebrow">Why it's better</p>
+    <h2>Compared with lab sampling and centralised treatment</h2>
+    <div class="tbl" style="background:var(--bg);color:var(--fg)">
+      <table>
+        <thead><tr><th scope="col">Criteria</th><th scope="col">Existing PFAS detection &amp; treatment</th><th scope="col">Dronaqua</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Detection</th><td>High accuracy, but solid-phase extraction and direct injection are localised and lab-based</td><td class="us">High, scalable via the drone network; on-site electrochemical sensing targets PFOS down to 1.6 nM</td></tr>
+          <tr><th scope="row">Treatment</th><td>Moderate; high heat and strong chemicals remediate PFAS but produce other harmful byproducts</td><td class="us">High; carbon adsorption can bring PFAS in contaminated samples to under 1.5% of the original</td></tr>
+          <tr><th scope="row">Cost</th><td>High; fixed infrastructure and per-sample lab fees</td><td class="us">Low; S$600–800 per drone, solar-powered, no transport</td></tr>
+          <tr><th scope="row">Deployment speed</th><td>Slow; fixed infrastructure, 4 h+ per result</td><td class="us">Near-immediate; drones cover large areas quickly over the mesh</td></tr>
+          <tr><th scope="row">Environmental impact</th><td>Chemical byproducts and physical waste from heating; disposal problems</td><td class="us">Minimal; solar energy, biodegradable components</td></tr>
+          <tr><th scope="row">Scalability</th><td>Limited to a fixed number of samples</td><td class="us">Highly scalable; add drones, and the dataset improves with every deployment</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="caveat muted">Where it's weaker: not every water body is accessible to a floating drone, and data collection stops in extreme weather. Labs remain the confirmation step for regulatory readings.</p>
+  </div>
+</section>
+
+<section id="story">
+  <div class="wrap">
+    <p class="eyebrow">Our story</p>
+    <h2>What four students did in a year.</h2>
+    <ul class="tl">
+      <li>
+        <span class="when">The gap</span>
+        <h3>A monitoring problem nobody was funding</h3>
+        <p>While interning with PUB and in NUS water labs, Belle saw that urban PFAS sampling was periodic, slow and centralised. Jacob, after years of water and sustainability work at UWCSEA, wanted to build rather than campaign. Vikram, Jacob, Belle and Alex founded Dronaqua to close it.</p>
+      </li>
+      <li>
+        <span class="when">Recognition</span>
+        <h3>Conrad Challenge Finalists</h3>
+        <p>Our PFAS detection and remediation concept was recognised for feasibility and impact, and the team was invited to the Innovation Summit in Houston as finalists. Exam clashes kept us home, but the invitation itself was a milestone.</p>
+      </li>
+      <li>
+        <span class="when">Funding</span>
+        <h3>Youth innovation grants secured</h3>
+        <p>GoMakeADifference, the IB Global Youth Action Fund, the Awesome Foundation and others funded component purchases for R&amp;D and prototyping. Most of the drone's parts have been bought.</p>
+      </li>
+      <li>
+        <span class="when">Community</span>
+        <h3>United Water Conference 2025</h3>
+        <p>Co-hosted by Vikram, Jacob and Belle at UWCSEA, with sessions on pollutants, urban catchments and data-driven remediation, and industry professionals brought in through the alumni network. A platform for the next generation's water solutions, not just ours.</p>
+      </li>
+      <li>
+        <span class="when">Partners</span>
+        <h3>PUB, NUS, NTU, A*STAR and Metrohm</h3>
+        <p>Method guidance from university researchers, instrumentation support from Metrohm, and interest from PUB's leadership in supporting patent applications and scaling nationally. The partnerships also open access to restricted catchment areas for data collection.</p>
+      </li>
+      <li>
+        <span class="when">12 May 2025</span>
+        <h3>Incorporated in Singapore</h3>
+        <p>Dronaqua is a registered Singapore business (UEN 53503874K), with a patent on the integrated detect-map-treat architecture in progress.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="deep">
+  <div class="wrap">
+    <p class="quote">"Even though we're still in school, we've built drones that can actually make a difference in cleaning and protecting our environment."</p>
+    <p class="quote-by">The Dronaqua team · Dunia, January 2026</p>
+  </div>
+</section>
+
+<section id="team">
+  <div class="wrap">
+    <p class="eyebrow">Team</p>
+    <h2>Four people, four disciplines.</h2>
+    <div class="team">
+      <div class="member">
+        <h3>Vikram Goel</h3>
+        <p class="role">Co-founder · Systems &amp; mechanical design</p>
+        <blockquote>"Dronaqua taught me that the fastest way to understand something is to build it."</blockquote>
+        <p class="does">Drone design, systems integration and assembly; co-hosted the United Water Conference.</p>
+      </div>
+      <div class="member">
+        <h3>Jacob Wang</h3>
+        <p class="role">Co-founder · Director, product &amp; partnerships</p>
+        <blockquote>"Dronaqua's existence is a reminder to me every day that we can accomplish something that hasn't been done before, in any field, at any age."</blockquote>
+        <p class="does">Website, CAD modelling, outreach and fundraising.</p>
+      </div>
+      <div class="member">
+        <h3>Belle Zhou</h3>
+        <p class="role">Co-founder · PFAS research &amp; outreach</p>
+        <blockquote>"PFAS contamination is one of the most urgent but overlooked environmental issues we face today, because it has the potential to affect everyone, everywhere."</blockquote>
+        <p class="does">University-lab PFAS research experience; scientific expertise, lab access and partner relationships.</p>
+      </div>
+      <div class="member">
+        <h3>Alex Cho</h3>
+        <p class="role">Software, simulation &amp; comms</p>
+        <blockquote>"Data is most powerful when it's mapped, timestamped, and actionable."</blockquote>
+        <p class="does">Swarm simulation, mesh networking and the control-station software.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="deep" style="padding-block:3rem">
+  <div class="wrap">
+    <p class="eyebrow">Partners &amp; supporters</p>
+    <div class="logos">
+      <span>PUB, Singapore's National Water Agency</span>
+      <span>National University of Singapore</span>
+      <span>Nanyang Technological University</span>
+      <span>A*STAR IMRE</span>
+      <span>Metrohm</span>
+      <span>UWCSEA</span>
+      <span>Conrad Challenge</span>
+      <span>GoMakeADifference</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <p class="eyebrow">Gallery</p>
+    <h2>In the field, in the lab, on stage.</h2>
+    <div class="gal">
+      <figure class="wide">
+        <img src="img/team-globe.jpg" alt="The four Dronaqua team members standing in front of the steel globe sculpture at UWCSEA Dover Campus" width="1360" height="908">
+        <figcaption><b>The co-founders at UWCSEA Dover Campus.</b> From left: Alex Cho, Vikram Goel, Belle Zhou and Jacob Wang.</figcaption>
+      </figure>
+      <figure class="tall">
+        <img src="img/belle-harry.jpg" alt="Belle Zhou standing beside Mr Harry Seah outside his office at PUB" width="690" height="902">
+        <figcaption><b>Co-founder Belle Zhou with Mr Harry Seah, former Deputy Chief Executive of PUB, Singapore's National Water Agency, and now Senior Consultant to its Chief Executive.</b> Mr Seah has expressed interest in supporting Dronaqua's patent application and in scaling the technology for national use.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/team-laptop.jpg" alt="The team crouched on outdoor steps around a laptop, one member pointing into the distance" width="1124" height="746">
+        <figcaption><b>Planning a deployment.</b> Working through swarm coverage and control-station data on campus.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/conference.jpg" alt="Students, alumni and speakers gathered in front of the United Water Conference 2025 screen" width="2070" height="1366">
+        <figcaption><b>United Water Conference 2025.</b> Co-hosted at UWCSEA to spark youth interest in water security, with support from the alumni team and Parent Association.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="next" class="deep">
+  <div class="wrap">
+    <p class="eyebrow">What's next</p>
+    <h2>From Singapore pilots to a regional platform.</h2>
+    <div class="next">
+      <div><h3>Singapore International Water Week</h3><p>Invited to present the youth-led approach to PFOS screening and on-site adsorption, as the youngest attendees.</p></div>
+      <div><h3>UN-Water partnerships</h3><p>Pursuing collaborations and knowledge-sharing on PFAS monitoring frameworks for urban waterways.</p></div>
+      <div><h3>Pilots and licensing</h3><p>Expand from Singapore pilots to regional city partners; license assemblies to local integrators while Dronaqua keeps the IP and DronaData rights.</p></div>
+      <div><h3>Patent and trade secrets</h3><p>Continue prosecution on the integrated detect-map-treat architecture and swarm workflows; document MIP casting, cartridge packing and fleet QA.</p></div>
+      <div><h3>The dataset moat</h3><p>Grow DronaData through authorised deployments in restricted catchments and public canals, with lab-confirmed case studies.</p></div>
+      <div><h3>Business model</h3><p>Fleets as a subscription with maintenance, plus DronaData time-series licensing for research and policy use.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 Dronaqua · Singapore UEN <code>53503874K</code> · Registered 12 May 2025</div>
+    <div>Dronaqua is a student-founded company from UWCSEA Dover Campus.</div>
+  </div>
+</footer>
+
+</body>
+</html>
